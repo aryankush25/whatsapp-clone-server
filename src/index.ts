@@ -1,46 +1,31 @@
-import express from 'express';
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import { createConnection } from 'typeorm';
-import { User } from './entity/User';
+import 'reflect-metadata';
+import { Routes } from './routes';
 
 // create typeorm connection
-createConnection().then((connection) => {
-  const userRepository = connection.getRepository(User);
-
+createConnection().then(() => {
   // create and setup express app
   const app = express();
   app.use(express.json());
 
   // register routes
+  Routes.forEach((route) => {
+    (app as any)[route.method](route.route, (req: Request, res: Response, next: Function) => {
+      const result = new (route.controller as any)()[route.action](req, res, next);
 
-  app.get('/users', async function (req: Request, res: Response) {
-    const users = await userRepository.find();
-    res.json(users);
+      if (result instanceof Promise) {
+        result.then((result) => (result !== null && result !== undefined ? res.send(result) : undefined));
+      } else if (result !== null && result !== undefined) {
+        res.json(result);
+      }
+    });
   });
 
-  app.get('/users/:id', async function (req: Request, res: Response) {
-    const results = await userRepository.findOne(req.params.id);
-    return res.send(results);
-  });
-
-  app.post('/users', async function (req: Request, res: Response) {
-    const user = await userRepository.create(req.body);
-    const results = await userRepository.save(user);
-    return res.send(results);
-  });
-
-  app.put('/users/:id', async function (req: Request, res: Response) {
-    const user = await userRepository.findOne(req.params.id);
-    userRepository.merge(user, req.body);
-    const results = await userRepository.save(user);
-    return res.send(results);
-  });
-
-  app.delete('/users/:id', async function (req: Request, res: Response) {
-    const results = await userRepository.delete(req.params.id);
-    return res.send(results);
-  });
+  const port = process.env.PORT || 7000;
 
   // start express server
-  app.listen(3000);
+  app.listen(port, () => {
+    console.log('Server is up on port ' + port);
+  });
 });
