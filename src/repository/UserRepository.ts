@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { User } from '../entity/User';
+import { User } from '../../database/entity/User';
 
 const SECRET = 'secret';
 

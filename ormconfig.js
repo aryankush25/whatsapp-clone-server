@@ -7,10 +7,10 @@ module.exports = {
   database: 'template1',
   synchronize: true,
   logging: false,
-  entities: ['build/entity/*.{js,ts}'],
-  migrations: ['build/migration/*.{js,ts}'],
+  entities: ['build/database/entity/*.js'],
+  migrations: ['build/database/migration/*.js'],
   cli: {
-    entitiesDir: 'src/entity',
-    migrationsDir: 'src/migration',
+    entitiesDir: 'database/entity',
+    migrationsDir: 'database/migration',
   },
 };

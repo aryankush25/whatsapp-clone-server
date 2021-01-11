@@ -15,7 +15,7 @@ const authMiddleware = async (request: Request, response: Response, next: NextFu
       const dataFromToken = userRepository.verifyToken(token);
 
       if (dataFromToken['id']) {
-        next();
+        return next();
       }
 
       throw new Error('Invalid token!');
