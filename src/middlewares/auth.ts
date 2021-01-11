@@ -18,14 +18,14 @@ const authMiddleware = async (request: Request, response: Response, next: NextFu
         next();
       }
 
-      return null;
+      throw new Error('Invalid token!');
     }
 
     throw new Error('No authorization present!');
   } catch (error) {
-    console.log('error', error);
+    console.error('error', error);
 
-    return response.status(404).json();
+    return response.status(401).json(error);
   }
 };
 
