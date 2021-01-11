@@ -2,28 +2,30 @@ import { UserController } from '../controller/UserController';
 
 const userRoutes = [
   {
-    method: 'get',
-    route: '/users',
-    controller: UserController,
-    action: 'all',
-  },
-  {
-    method: 'get',
-    route: '/users/:id',
-    controller: UserController,
-    action: 'one',
-  },
-  {
     method: 'post',
-    route: '/users',
+    route: '/register',
     controller: UserController,
-    action: 'save',
+    action: 'register',
+    openAuth: true,
+  },
+  {
+    method: 'get',
+    route: '/login',
+    controller: UserController,
+    action: 'login',
+    openAuth: true,
+  },
+  {
+    method: 'get',
+    route: '/me',
+    controller: UserController,
+    action: 'me',
   },
   {
     method: 'delete',
-    route: '/users/:id',
+    route: '/me',
     controller: UserController,
-    action: 'remove',
+    action: 'deleteMe',
   },
 ];
 

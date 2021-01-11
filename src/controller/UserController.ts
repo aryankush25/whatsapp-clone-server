@@ -1,24 +1,54 @@
-import { getRepository } from 'typeorm';
 import { NextFunction, Request, Response } from 'express';
-import { User } from '../entity/User';
-
+import UserRepository from '../repository/UserRepository';
+import jwt from 'jsonwebtoken';
 export class UserController {
-  private userRepository = getRepository(User);
+  private userRepository = new UserRepository();
 
-  async all(request: Request, response: Response, next: NextFunction) {
-    return this.userRepository.find();
+  async register(request: Request) {
+    const user = await this.userRepository.createUser(request.body);
+
+    return {
+      ...user,
+      token: this.userRepository.generateJWT(user.id, user.email),
+    };
   }
 
-  async one(request: Request, response: Response, next: NextFunction) {
-    return this.userRepository.findOne(request.params.id);
+  async login(request: Request) {
+    const { email, password } = request.body;
+
+    const isValidUser = await this.userRepository.validatePassword(email, password);
+
+    if (isValidUser) {
+      const user = await this.userRepository.getUser({ where: { email } });
+
+      return {
+        ...user,
+        token: this.userRepository.generateJWT(user.id, user.email),
+      };
+    }
   }
 
-  async save(request: Request, response: Response, next: NextFunction) {
-    return this.userRepository.save(request.body);
+  async me(request: Request) {
+    const user = await this.getUserFromRequestObject(request);
+
+    return user;
   }
 
-  async remove(request: Request, response: Response, next: NextFunction) {
-    let userToRemove = await this.userRepository.findOne(request.params.id);
-    await this.userRepository.remove(userToRemove);
+  async deleteMe(request: Request) {
+    const user = await this.getUserFromRequestObject(request);
+
+    return this.userRepository.deleteUser(user.id);
+  }
+
+  async getUserFromRequestObject(request: Request) {
+    const {
+      headers: { authorization },
+    } = request;
+
+    const token = authorization.split(' ')[1];
+    const decoded = jwt.decode(token);
+    const user = await this.userRepository.getUser(decoded['id']);
+
+    return user;
   }
 }
