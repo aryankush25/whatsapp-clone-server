@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { UserDoesNotExistError } from '../errors';
 import UserRepository from '../repository/UserRepository';
 export class UserController {
   private userRepository = new UserRepository();
@@ -20,16 +21,23 @@ export class UserController {
     try {
       const { email, password } = request.body;
 
+      console.log('#### email', email);
+      console.log('#### password', password);
+
       const isValidUser = await this.userRepository.validatePassword(email, password);
 
-      if (isValidUser) {
-        const user = await this.userRepository.getUser({ where: { email } });
+      console.log('#### isValidUser', isValidUser);
 
-        return {
-          ...user,
-          token: this.userRepository.generateJWT(user.id, user.email),
-        };
+      if (!isValidUser) {
+        throw UserDoesNotExistError();
       }
+
+      const user = await this.userRepository.getUser({ where: { email } });
+
+      return {
+        ...user,
+        token: this.userRepository.generateJWT(user.id, user.email),
+      };
     } catch (error) {
       return next(error);
     }

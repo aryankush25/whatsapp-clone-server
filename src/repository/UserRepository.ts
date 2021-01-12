@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import crypto from 'crypto';
+import CryptoJS from 'crypto-js';
 import jwt from 'jsonwebtoken';
 import { User } from '../database/entity/User';
 
@@ -41,9 +41,7 @@ class UserRepository {
   }
 
   createHashedPassword(password: string) {
-    const salt = crypto.randomBytes(16).toString('hex');
-
-    const hashedPassword = crypto.pbkdf2Sync(password, salt, 10000, 512, 'sha512').toString('hex');
+    const hashedPassword = CryptoJS.AES.encrypt(password, SECRET).toString();
 
     return hashedPassword;
   }
@@ -51,9 +49,10 @@ class UserRepository {
   async validatePassword(email: string, password: string) {
     const user = await this.userRepository.findOne({ where: { email } });
 
-    const hashedPassword = this.createHashedPassword(password);
+    var bytes = CryptoJS.AES.decrypt(user.hashedPassword, SECRET);
+    var originalText = bytes.toString(CryptoJS.enc.Utf8);
 
-    return hashedPassword === user.hashedPassword;
+    return password === originalText;
   }
 
   generateJWT(id: string, email: string) {
