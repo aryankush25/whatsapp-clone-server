@@ -10,7 +10,7 @@
     "build": "npm run clean && npm run build:only",
     "migrate": "npm run build && ./node_modules/typeorm/cli.js migration:run",
     "migrate:generate": "npm run build && ./node_modules/typeorm/cli.js migration:generate -n",
-    "start:build": "node build/src/index.js",
+    "start:build": "node build/index.js",
     "start": "npm run migrate && npm run start:build",
     "start:dev": "npm run build:only && npm run start:build",
     "dev": "npm run migrate && nodemon"

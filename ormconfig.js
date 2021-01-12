@@ -10,7 +10,7 @@ module.exports = {
   entities: ['build/database/entity/*.js'],
   migrations: ['build/database/migration/*.js'],
   cli: {
-    entitiesDir: 'database/entity',
-    migrationsDir: 'database/migration',
+    entitiesDir: 'src/database/entity',
+    migrationsDir: 'src/database/migration',
   },
 };
