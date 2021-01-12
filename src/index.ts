@@ -3,6 +3,7 @@ import { createConnection } from 'typeorm';
 import 'reflect-metadata';
 import { Routes } from './routes';
 import authMiddleware from './middlewares/auth';
+import { routeNotFound, handleErrors } from './middlewares/errors';
 
 // create typeorm connection
 console.info('Connecting to DB');
@@ -35,31 +36,9 @@ createConnection()
 
     const port = process.env.PORT || 7000;
 
-    interface ResponseError extends Error {
-      status?: number;
-      statusCode?: number;
-    }
+    app.use(routeNotFound);
 
-    app.use((req: Request, res: Response, next: NextFunction) => {
-      const error: ResponseError = new Error('Route Not found');
-
-      error.statusCode = 404;
-      error.message = 'Route Not found';
-      next(error);
-    });
-
-    app.use((err: ResponseError, req: Request, res: Response, next: NextFunction) => {
-      if (err.status || err.statusCode) {
-        return res.status(err.status).json({
-          error: err.message,
-        });
-      }
-      next(err);
-    });
-
-    app.use((err: ResponseError, req: Request, res: Response, next: NextFunction) => {
-      res.status(500).json({});
-    });
+    app.use(handleErrors);
 
     // start express server
     app.listen(port, () => {

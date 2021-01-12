@@ -82,6 +82,8 @@ class UserRepository {
   }
 
   formatUserDataWithoutHashedPassword(user: User) {
+    if (!user) return user;
+
     delete user.hashedPassword;
 
     return user;

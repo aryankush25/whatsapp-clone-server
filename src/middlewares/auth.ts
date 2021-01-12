@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import UserRepository from '../repository/UserRepository';
+import { UnauthorizedError, UserDoesNotExistError } from '../errors';
 
 const authMiddleware = async (request: Request, response: Response, next: NextFunction) => {
   try {
@@ -8,24 +9,28 @@ const authMiddleware = async (request: Request, response: Response, next: NextFu
     } = request;
 
     if (authorization && authorization.split(' ')[0] === 'Bearer' && authorization.split(' ')[1]) {
-      const token = authorization.split(' ')[1];
-
       const userRepository = new UserRepository();
+
+      const token = authorization.split(' ')[1];
 
       const dataFromToken = userRepository.verifyToken(token);
 
       if (dataFromToken['id']) {
+        const user = await userRepository.getUser(dataFromToken['id']);
+
+        if (!user) {
+          throw UserDoesNotExistError();
+        }
+
+        response.locals.user = user;
+
         return next();
       }
-
-      throw new Error('Invalid token!');
     }
 
-    throw new Error('No authorization present!');
+    throw UnauthorizedError();
   } catch (error) {
-    console.error('error', error);
-
-    return response.status(401).json(error);
+    return next(error);
   }
 };
 
