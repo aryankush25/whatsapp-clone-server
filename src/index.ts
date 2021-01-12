@@ -1,14 +1,17 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { createConnection } from 'typeorm';
+import chalk from 'chalk';
 import 'reflect-metadata';
 import { Routes } from './routes';
 import authMiddleware from './middlewares/auth';
 import { routeNotFound, handleErrors } from './middlewares/errors';
 
 // create typeorm connection
-console.info('Connecting to DB');
+console.info(chalk.keyword('orange').bold('Connecting to DB'));
 createConnection()
   .then(() => {
+    console.info(chalk.keyword('orange').bold('Connected to DB'));
+
     // create and setup express app
     const app = express();
     app.use(express.json());
@@ -42,9 +45,9 @@ createConnection()
 
     // start express server
     app.listen(port, () => {
-      console.log('Server is up at -> ' + `http://localhost:${port}/`);
+      console.log(chalk.keyword('green').bold('Server is up at -> ' + `http://localhost:${port}/`));
     });
   })
   .catch((error) => {
-    console.error(error);
+    console.error('Connection Error -> ', error);
   });

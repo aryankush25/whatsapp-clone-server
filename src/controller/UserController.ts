@@ -21,12 +21,7 @@ export class UserController {
     try {
       const { email, password } = request.body;
 
-      console.log('#### email', email);
-      console.log('#### password', password);
-
       const isValidUser = await this.userRepository.validatePassword(email, password);
-
-      console.log('#### isValidUser', isValidUser);
 
       if (!isValidUser) {
         throw UserDoesNotExistError();
