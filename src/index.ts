@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { createConnection } from 'typeorm';
 import chalk from 'chalk';
+import cors from 'cors';
 import 'reflect-metadata';
 import { Routes } from './routes';
 import authMiddleware from './middlewares/auth';
@@ -15,6 +16,7 @@ createConnection()
     // create and setup express app
     const app = express();
     app.use(express.json());
+    app.use(cors());
 
     // register routes
     Routes.forEach((route) => {

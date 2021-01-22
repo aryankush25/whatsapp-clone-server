@@ -9,7 +9,7 @@ const userRoutes = [
     openAuth: true,
   },
   {
-    method: 'get',
+    method: 'post',
     route: '/login',
     controller: UserController,
     action: 'login',
