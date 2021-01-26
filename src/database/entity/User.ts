@@ -20,7 +20,10 @@ export class User {
   @Column()
   hashedPassword: string;
 
-  @Column({ type: 'timestamp', default: new Date().toISOString() })
+  @Column({ default: false })
+  isOnline: boolean;
+
+  @Column({ type: 'timestamp' })
   createdAt: string;
 
   @Column({ type: 'timestamp', nullable: true })
@@ -32,6 +35,7 @@ export class User {
   @BeforeInsert()
   addInitialFields() {
     this.id = v4();
+    this.createdAt = new Date().toISOString();
   }
 
   @BeforeUpdate()
