@@ -40,6 +40,26 @@ class UserRepository {
     return this.formatUserDataWithoutHashedPassword(userToRemove);
   }
 
+  async setUserOnline(props: Object = {}) {
+    const userToSetOnline = await this.getUser(props);
+
+    userToSetOnline.isOnline = true;
+
+    await this.userRepository.save(userToSetOnline);
+
+    return this.formatUserDataWithoutHashedPassword(userToSetOnline);
+  }
+
+  async setUserOffline(props: Object = {}) {
+    const userToSetOnline = await this.getUser(props);
+
+    userToSetOnline.isOnline = false;
+
+    await this.userRepository.save(userToSetOnline);
+
+    return this.formatUserDataWithoutHashedPassword(userToSetOnline);
+  }
+
   createHashedPassword(password: string) {
     const hashedPassword = CryptoJS.AES.encrypt(password, SECRET).toString();
 

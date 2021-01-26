@@ -7,6 +7,7 @@ import 'reflect-metadata';
 import { Routes } from './routes';
 import authMiddleware from './middlewares/auth';
 import { routeNotFound, handleErrors } from './middlewares/errors';
+import startWebsocket from './webSockets';
 
 // create typeorm connection
 console.info(chalk.keyword('orange').bold('Connecting to DB'));
@@ -50,20 +51,7 @@ createConnection()
 
     app.use(handleErrors);
 
-    io.on('connection', function (socket: any) {
-      console.log('New websocket connection');
-
-      socket.emit('message', 'Welcome!');
-      socket.broadcast.emit('message', 'A new user has joined!');
-
-      socket.on('message', function (message: any) {
-        io.emit('message', message);
-      });
-
-      socket.on('disconnect', () => {
-        io.emit('message', 'A user has left!');
-      });
-    });
+    startWebsocket(io);
 
     // start express server
     server.listen(port, () => {
