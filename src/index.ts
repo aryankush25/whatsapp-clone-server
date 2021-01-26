@@ -1,5 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { createConnection } from 'typeorm';
+import http from 'http';
+import cors from 'cors';
 import chalk from 'chalk';
 import 'reflect-metadata';
 import { Routes } from './routes';
@@ -8,13 +10,18 @@ import { routeNotFound, handleErrors } from './middlewares/errors';
 
 // create typeorm connection
 console.info(chalk.keyword('orange').bold('Connecting to DB'));
+
 createConnection()
   .then(() => {
     console.info(chalk.keyword('orange').bold('Connected to DB'));
 
     // create and setup express app
     const app = express();
+    const server = http.createServer(app);
+    const io = require('socket.io')(server);
+
     app.use(express.json());
+    app.use(cors());
 
     // register routes
     Routes.forEach((route) => {
@@ -43,8 +50,23 @@ createConnection()
 
     app.use(handleErrors);
 
+    io.on('connection', function (socket: any) {
+      console.log('New websocket connection');
+
+      socket.emit('message', 'Welcome!');
+      socket.broadcast.emit('message', 'A new user has joined!');
+
+      socket.on('message', function (message: any) {
+        io.emit('message', message);
+      });
+
+      socket.on('disconnect', () => {
+        io.emit('message', 'A user has left!');
+      });
+    });
+
     // start express server
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log(chalk.keyword('green').bold('Server is up at -> ' + `http://localhost:${port}/`));
     });
   })
