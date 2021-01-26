@@ -11,6 +11,11 @@ interface CreateUserPayload {
   password: string;
 }
 
+interface UpdateUserPayload {
+  searchProps: Object;
+  updatedValues: any;
+}
+
 class UserRepository {
   private userRepository = getRepository(User);
 
@@ -40,24 +45,17 @@ class UserRepository {
     return this.formatUserDataWithoutHashedPassword(userToRemove);
   }
 
-  async setUserOnline(props: Object = {}) {
-    const userToSetOnline = await this.getUser(props);
+  async updateUser(props: UpdateUserPayload) {
+    let userToUpdate: any = await this.getUser(props.searchProps);
 
-    userToSetOnline.isOnline = true;
+    userToUpdate = {
+      ...userToUpdate,
+      ...props.updatedValues,
+    };
 
-    await this.userRepository.save(userToSetOnline);
+    await this.userRepository.save(userToUpdate);
 
-    return this.formatUserDataWithoutHashedPassword(userToSetOnline);
-  }
-
-  async setUserOffline(props: Object = {}) {
-    const userToSetOnline = await this.getUser(props);
-
-    userToSetOnline.isOnline = false;
-
-    await this.userRepository.save(userToSetOnline);
-
-    return this.formatUserDataWithoutHashedPassword(userToSetOnline);
+    return this.formatUserDataWithoutHashedPassword(userToUpdate);
   }
 
   createHashedPassword(password: string) {

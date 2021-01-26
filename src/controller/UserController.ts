@@ -53,4 +53,48 @@ export class UserController {
       return next(error);
     }
   }
+
+  async setUserOnline(userId: number, socketId: string) {
+    try {
+      return this.userRepository.updateUser({
+        searchProps: userId,
+        updatedValues: {
+          isOnline: true,
+          socketId,
+        },
+      });
+    } catch (error) {
+      console.error('setUserOnline error', error);
+    }
+  }
+
+  async setUserOffline(socketId: string) {
+    try {
+      return this.userRepository.updateUser({
+        searchProps: {
+          where: {
+            socketId,
+          },
+        },
+        updatedValues: {
+          isOnline: false,
+          socketId: null,
+        },
+      });
+    } catch (error) {
+      console.error('setUserOffline error', error);
+    }
+  }
+
+  async meSocketId(socketId: string) {
+    try {
+      return this.userRepository.getUser({
+        where: {
+          socketId,
+        },
+      });
+    } catch (error) {
+      console.error('setUserOffline error', error);
+    }
+  }
 }

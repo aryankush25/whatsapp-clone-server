@@ -1,45 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, ManyToMany, JoinTable } from 'typeorm';
 import { v4 } from 'uuid';
-import { Chat } from './Chat';
+import { User } from './User';
 
 @Entity()
-export class User {
+export class Chat {
   @PrimaryGeneratedColumn()
   id: string;
 
   @Column('text')
-  name: string;
+  content: string;
 
-  @Column('text', {
-    unique: true,
+  @ManyToMany(() => User, (user: User) => user.chats, {
+    cascade: true,
   })
-  email: string;
+  createdBy: User;
 
-  @Column({ default: false })
-  isEmailVerified: boolean;
-
-  @Column()
-  hashedPassword: string;
-
-  @Column({ default: false })
-  isOnline: boolean;
-
-  @Column('text', {
-    unique: true,
-    nullable: true,
+  @ManyToMany(() => User, (user: User) => user.chats, {
+    cascade: true,
   })
-  socketId: string;
-
-  @ManyToMany(() => Chat)
-  chats: Chat[];
+  sentTo: User;
 
   @Column({ type: 'timestamp' })
   createdAt: string;
 
   @Column({ type: 'timestamp', nullable: true })
+  @JoinTable()
   updatedAt: string;
 
   @Column({ type: 'timestamp', nullable: true })
+  @JoinTable()
   deletedAt: string;
 
   @BeforeInsert()

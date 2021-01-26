@@ -1,7 +1,7 @@
 {
-  "name": "whatsapp-clone-server",
+  "name": "lets-chat-server",
   "version": "1.0.0",
-  "description": "This is a whatsapp server clone.",
+  "description": "This is a let's chat server.",
   "main": "src/index.js",
   "scripts": {
     "lint": "tslint -p tsconfig.json",
