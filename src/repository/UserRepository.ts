@@ -1,6 +1,7 @@
 import { getRepository } from 'typeorm';
 import CryptoJS from 'crypto-js';
 import jwt from 'jsonwebtoken';
+import { v4 } from 'uuid';
 import { User } from '../database/entity/User';
 
 const SECRET = 'secret';
@@ -26,6 +27,8 @@ class UserRepository {
       name,
       email,
       hashedPassword: this.createHashedPassword(password),
+      createdAt: new Date().toISOString(),
+      id: v4(),
     });
 
     return this.formatUserDataWithoutHashedPassword(user);

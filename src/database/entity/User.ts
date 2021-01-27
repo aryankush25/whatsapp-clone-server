@@ -1,10 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, ManyToMany } from 'typeorm';
-import { v4 } from 'uuid';
+import { Entity, PrimaryColumn, Column, BeforeUpdate, ManyToMany } from 'typeorm';
 import { Chat } from './Chat';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
   @Column('text')
@@ -41,12 +40,6 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   deletedAt: string;
-
-  @BeforeInsert()
-  addInitialFields() {
-    this.id = v4();
-    this.createdAt = new Date().toISOString();
-  }
 
   @BeforeUpdate()
   updateDates() {
