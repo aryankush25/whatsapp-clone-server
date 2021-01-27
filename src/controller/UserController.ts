@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { In } from 'typeorm';
+import * as R from 'ramda';
 import { Chat } from '../database/entity/Chat';
 import { UserDoesNotExistError } from '../errors';
 import UserRepository from '../repository/UserRepository';
@@ -62,34 +64,40 @@ export class UserController {
         relations: ['sentChats', 'receivedChats'],
       });
 
-      const sentChats = currentUserWithChats.sentChats;
-      const receivedChats = currentUserWithChats.receivedChats;
-
       let friends = [];
 
-      sentChats.forEach((chat: Chat) => {
-        friends = [
-          ...friends,
-          {
-            chatWith: chat.receiverId,
-            createAt: chat.createdAt,
-          },
-        ];
+      currentUserWithChats.sentChats.forEach((chat: Chat) => {
+        friends.push({
+          chat,
+          chatWith: chat.receiverId,
+        });
       });
 
-      receivedChats.forEach((chat: Chat) => {
-        friends = [
-          ...friends,
-          {
-            chatWith: chat.senderId,
-            createAt: chat.createdAt,
-          },
-        ];
+      currentUserWithChats.receivedChats.forEach((chat: Chat) => {
+        friends.push({
+          chat,
+          chatWith: chat.senderId,
+        });
       });
 
-      console.log('#### sentChats', sentChats);
-      console.log('#### receivedChats', receivedChats);
-      console.log('#### friends', friends);
+      friends.sort((first, second) => {
+        return second.chat.createdAt - first.chat.createdAt;
+      });
+
+      friends = R.uniqBy(R.prop('chatWith'), friends);
+
+      const friendsData = await this.userRepository.getUsers({
+        where: {
+          id: In(friends.map((friend) => friend.chatWith)),
+        },
+      });
+
+      friends = friends.map((friend) => {
+        return {
+          ...R.find(R.propEq('id', friend.chatWith))(friendsData),
+          latestChat: friend.chat,
+        };
+      });
 
       return friends;
     } catch (error) {

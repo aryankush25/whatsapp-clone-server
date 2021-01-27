@@ -40,6 +40,12 @@ class UserRepository {
     return this.formatUserDataWithoutHashedPassword(user);
   }
 
+  async getUsers(props: Object = {}) {
+    const users = await this.userRepository.find(props);
+
+    return this.formatUsersDataWithoutHashedPassword(users);
+  }
+
   async deleteUser(props: Object = {}) {
     const userToRemove = await this.getUser(props);
 
@@ -105,8 +111,18 @@ class UserRepository {
     if (!user) return user;
 
     delete user.hashedPassword;
+    delete user.isOnline;
+    delete user.socketId;
 
     return user;
+  }
+
+  formatUsersDataWithoutHashedPassword(users: User[]) {
+    if (!users) return users;
+
+    return users.map((user: User) => {
+      return this.formatUserDataWithoutHashedPassword(user);
+    });
   }
 }
 
