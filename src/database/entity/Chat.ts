@@ -1,41 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, ManyToMany, JoinTable } from 'typeorm';
-import { v4 } from 'uuid';
+import { Entity, PrimaryColumn, Column, BeforeUpdate, ManyToOne, JoinTable } from 'typeorm';
 import { User } from './User';
 
 @Entity()
 export class Chat {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
   @Column('text')
   content: string;
 
-  @ManyToMany(() => User, (user: User) => user.chats, {
+  @ManyToOne(() => User, (user: User) => user.sentChats, {
     cascade: true,
   })
-  createdBy: User;
+  @JoinTable()
+  sender: User;
 
-  @ManyToMany(() => User, (user: User) => user.chats, {
+  @Column({ nullable: true })
+  senderId: string;
+
+  @ManyToOne(() => User, (user: User) => user.receivedChats, {
     cascade: true,
   })
-  sentTo: User;
+  @JoinTable()
+  receiver: User;
+
+  @Column({ nullable: true })
+  receiverId: string;
 
   @Column({ type: 'timestamp' })
   createdAt: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  @JoinTable()
   updatedAt: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  @JoinTable()
   deletedAt: string;
-
-  @BeforeInsert()
-  addInitialFields() {
-    this.id = v4();
-    this.createdAt = new Date().toISOString();
-  }
 
   @BeforeUpdate()
   updateDates() {

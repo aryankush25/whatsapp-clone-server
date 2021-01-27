@@ -1,6 +1,7 @@
+import { RoutesPayload } from './';
 import { UserController } from '../controller/UserController';
 
-const userRoutes = [
+const userRoutes: RoutesPayload[] = [
   {
     method: 'post',
     route: '/register',

@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, BeforeUpdate, ManyToMany } from 'typeorm';
+import { Entity, PrimaryColumn, Column, BeforeUpdate, OneToMany, JoinTable } from 'typeorm';
 import { Chat } from './Chat';
 
 @Entity()
@@ -29,8 +29,13 @@ export class User {
   })
   socketId: string;
 
-  @ManyToMany(() => Chat)
-  chats: Chat[];
+  @OneToMany(() => Chat, (chat: Chat) => chat.sender)
+  @JoinTable()
+  sentChats: Chat[];
+
+  @OneToMany(() => Chat, (chat: Chat) => chat.receiver)
+  @JoinTable()
+  receivedChats: Chat[];
 
   @Column({ type: 'timestamp' })
   createdAt: string;

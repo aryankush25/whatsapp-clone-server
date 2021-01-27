@@ -1,8 +1,10 @@
 import { Namespace } from 'socket.io';
 import { UserController } from '../controller/UserController';
+import { ChatController } from '../controller/ChatController';
 
 const startWebsocket = (io: Namespace) => {
   const userController = new UserController();
+  const chatController = new ChatController();
 
   io.on('connection', function (socket: any) {
     socket.on('userOnline', async ({ userId }) => {
@@ -21,7 +23,9 @@ const startWebsocket = (io: Namespace) => {
     socket.on('message', async (message: any) => {
       console.log('Message', message);
 
-      io.to(message.to).emit('message', message);
+      const chat = await chatController.createMessage(message.text, socket.id, message.to);
+
+      io.to(message.to).emit('message', { chat });
     });
 
     socket.on('disconnect', async () => {

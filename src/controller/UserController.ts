@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { UserDoesNotExistError } from '../errors';
 import UserRepository from '../repository/UserRepository';
+
 export class UserController {
   private userRepository = new UserRepository();
 

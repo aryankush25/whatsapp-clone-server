@@ -4,7 +4,7 @@ import http from 'http';
 import cors from 'cors';
 import chalk from 'chalk';
 import 'reflect-metadata';
-import { Routes } from './routes';
+import { Routes, RoutesPayload } from './routes';
 import authMiddleware from './middlewares/auth';
 import { routeNotFound, handleErrors } from './middlewares/errors';
 import startWebsocket from './webSockets';
@@ -25,7 +25,7 @@ createConnection()
     app.use(cors());
 
     // register routes
-    Routes.forEach((route) => {
+    Routes.forEach((route: RoutesPayload) => {
       (app as any)[route.method](
         route.route,
         route.openAuth
