@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { Chat } from '../database/entity/Chat';
 import { UserDoesNotExistError } from '../errors';
 import UserRepository from '../repository/UserRepository';
 
@@ -50,6 +51,47 @@ export class UserController {
   async deleteMe(request: Request, response: Response, next: NextFunction) {
     try {
       return this.userRepository.deleteUser(response.locals.user.id);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getInitiatedChatUsers(request: Request, response: Response, next: NextFunction) {
+    try {
+      const currentUserWithChats = await this.userRepository.getUser(response.locals.user.id, {
+        relations: ['sentChats', 'receivedChats'],
+      });
+
+      const sentChats = currentUserWithChats.sentChats;
+      const receivedChats = currentUserWithChats.receivedChats;
+
+      let friends = [];
+
+      sentChats.forEach((chat: Chat) => {
+        friends = [
+          ...friends,
+          {
+            chatWith: chat.receiverId,
+            createAt: chat.createdAt,
+          },
+        ];
+      });
+
+      receivedChats.forEach((chat: Chat) => {
+        friends = [
+          ...friends,
+          {
+            chatWith: chat.senderId,
+            createAt: chat.createdAt,
+          },
+        ];
+      });
+
+      console.log('#### sentChats', sentChats);
+      console.log('#### receivedChats', receivedChats);
+      console.log('#### friends', friends);
+
+      return friends;
     } catch (error) {
       return next(error);
     }

@@ -34,8 +34,8 @@ class UserRepository {
     return this.formatUserDataWithoutHashedPassword(user);
   }
 
-  async getUser(props: Object = {}) {
-    const user = await this.userRepository.findOne(props);
+  async getUser(props: Object = {}, options: Object = {}) {
+    const user = await this.userRepository.findOne(props, options);
 
     return this.formatUserDataWithoutHashedPassword(user);
   }

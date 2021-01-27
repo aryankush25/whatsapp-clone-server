@@ -23,9 +23,9 @@ const startWebsocket = (io: Namespace) => {
     socket.on('message', async (message: any) => {
       console.log('Message', message);
 
-      const chat = await chatController.createMessage(message.text, socket.id, message.to);
+      const response = await chatController.createMessage(message.text, socket.id, message.to);
 
-      io.to(message.to).emit('message', { chat });
+      io.to(message.to).emit('message', { response });
     });
 
     socket.on('disconnect', async () => {

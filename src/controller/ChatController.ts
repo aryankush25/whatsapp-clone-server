@@ -16,7 +16,7 @@ export class ChatController {
       receiver,
     });
 
-    return chat;
+    return { chat, sender, receiver };
   }
 
   async getChatsBetween(request: Request, response: Response, next: NextFunction) {

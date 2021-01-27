@@ -28,6 +28,12 @@ const userRoutes: RoutesPayload[] = [
     controller: UserController,
     action: 'deleteMe',
   },
+  {
+    method: 'get',
+    route: '/myInitiatedChatsUsers',
+    controller: UserController,
+    action: 'getInitiatedChatUsers',
+  },
 ];
 
 export default userRoutes;
