@@ -1,37 +1,43 @@
-import { Namespace } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 import { UserController } from '../controller/UserController';
 import { ChatController } from '../controller/ChatController';
+import UserRepository from '../repository/UserRepository';
 
 const startWebsocket = (io: Namespace) => {
+  const userRepository = new UserRepository();
   const userController = new UserController();
   const chatController = new ChatController();
 
-  io.on('connection', function (socket: any) {
-    socket.on('userOnline', async ({ userId }) => {
-      console.log('New websocket connection', socket.id);
+  io.on('connection', async (socket: Socket) => {
+    const { token }: any = socket.handshake.auth;
 
-      socket.join(userId);
+    const dataFromToken = userRepository.verifyToken(token);
+    const userId = dataFromToken['id'];
 
-      await userController.setUserOnline(userId, socket.id);
+    console.log('New websocket connection', userId);
 
-      io.to(userId).emit('message', {
-        text: 'Connected',
-        userId,
-      });
+    socket.join(userId);
+
+    await userController.setUserOnline(userId);
+
+    io.to(userId).emit('message', {
+      text: 'Connected',
+      userId,
     });
 
     socket.on('message', async (message: any) => {
       console.log('Message', message);
+      console.log('User Id', userId);
 
-      const response = await chatController.createMessage(message.text, socket.id, message.to);
+      const response = await chatController.createMessage(message.text, userId, message.to);
 
       io.to(message.to).emit('message', { response });
     });
 
     socket.on('disconnect', async () => {
-      await userController.setUserOffline(socket.id);
+      await userController.setUserOffline(userId);
 
-      console.log('Closed websocket connection', socket.id);
+      console.log('Closed websocket connection', userId);
     });
   });
 };

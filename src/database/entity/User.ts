@@ -23,12 +23,6 @@ export class User {
   @Column({ default: false })
   isOnline: boolean;
 
-  @Column('text', {
-    unique: true,
-    nullable: true,
-  })
-  socketId: string;
-
   @OneToMany(() => Chat, (chat: Chat) => chat.sender)
   @JoinTable()
   sentChats: Chat[];

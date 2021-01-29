@@ -105,13 +105,12 @@ export class UserController {
     }
   }
 
-  async setUserOnline(userId: number, socketId: string) {
+  async setUserOnline(userId: string) {
     try {
       return this.userRepository.updateUser({
         searchProps: userId,
         updatedValues: {
           isOnline: true,
-          socketId,
         },
       });
     } catch (error) {
@@ -119,29 +118,13 @@ export class UserController {
     }
   }
 
-  async setUserOffline(socketId: string) {
+  async setUserOffline(userId: string) {
     try {
       return this.userRepository.updateUser({
-        searchProps: {
-          where: {
-            socketId,
-          },
-        },
+        searchProps: userId,
         updatedValues: {
           isOnline: false,
           socketId: null,
-        },
-      });
-    } catch (error) {
-      console.error('setUserOffline error', error);
-    }
-  }
-
-  async meSocketId(socketId: string) {
-    try {
-      return this.userRepository.getUser({
-        where: {
-          socketId,
         },
       });
     } catch (error) {

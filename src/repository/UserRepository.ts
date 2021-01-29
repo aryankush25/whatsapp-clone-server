@@ -112,7 +112,6 @@ class UserRepository {
 
     delete user.hashedPassword;
     delete user.isOnline;
-    delete user.socketId;
 
     return user;
   }

@@ -6,8 +6,8 @@ export class ChatController {
   private chatRepository = new ChatRepository();
   private userRepository = new UserRepository();
 
-  async createMessage(message: string, socketId: string, receiverId: string) {
-    const sender = await this.userRepository.getUser({ where: { socketId } });
+  async createMessage(message: string, userId: string, receiverId: string) {
+    const sender = await this.userRepository.getUser(userId);
     const receiver = await this.userRepository.getUser(receiverId);
 
     const chat = await this.chatRepository.createChat({
