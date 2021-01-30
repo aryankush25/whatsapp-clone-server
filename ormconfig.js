@@ -5,7 +5,7 @@ module.exports = {
   username: 'postgres',
   password: 'postgres',
   database: 'template1',
-  synchronize: true,
+  synchronize: false,
   logging: false,
   entities: ['build/database/entity/*.js'],
   migrations: ['build/database/migration/*.js'],

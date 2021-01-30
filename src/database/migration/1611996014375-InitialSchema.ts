@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class UserAndChatMigration1611758707083 implements MigrationInterface {
-    name = 'UserAndChatMigration1611758707083'
+export class InitialSchema1611996014375 implements MigrationInterface {
+    name = 'InitialSchema1611996014375'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "user" ("id" character varying NOT NULL, "name" text NOT NULL, "email" text NOT NULL, "isEmailVerified" boolean NOT NULL DEFAULT false, "hashedPassword" character varying NOT NULL, "isOnline" boolean NOT NULL DEFAULT false, "socketId" text, "createdAt" TIMESTAMP NOT NULL, "updatedAt" TIMESTAMP, "deletedAt" TIMESTAMP, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "UQ_1b0e793818b0c0efd4523a5c21a" UNIQUE ("socketId"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
