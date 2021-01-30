@@ -20,7 +20,6 @@ createConnection()
     // create and setup express app
     const app = express();
     const server = http.createServer(app);
-    const io = require('socket.io')(server);
 
     app.use(express.json());
     app.use(cors());
@@ -52,7 +51,7 @@ createConnection()
 
     app.use(handleErrors);
 
-    startWebsocket(io);
+    startWebsocket(server);
 
     // start express server
     server.listen(port, () => {

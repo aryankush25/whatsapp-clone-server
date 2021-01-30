@@ -1,4 +1,5 @@
 import { Namespace, Socket } from 'socket.io';
+import http from 'http';
 import { UserController } from '../controller/UserController';
 import { ChatController } from '../controller/ChatController';
 import UserRepository from '../repository/UserRepository';
@@ -12,7 +13,9 @@ import {
 import { messageTypes } from '../utils/constants';
 import { UnauthorizedError, ArgumentsDoesNotExistError } from '../errors';
 
-const startWebsocket = (io: Namespace) => {
+const startWebsocket = (server: ReturnType<typeof http.createServer>) => {
+  const io: Namespace = require('socket.io')(server);
+
   const userRepository = new UserRepository();
   const userController = new UserController();
   const chatController = new ChatController();
