@@ -3,6 +3,12 @@ import { UserController } from '../controller/UserController';
 import { ChatController } from '../controller/ChatController';
 import UserRepository from '../repository/UserRepository';
 
+interface ResponseProps {
+  isSuccess: boolean;
+  data?: Object;
+  error?: Object;
+}
+
 const startWebsocket = (io: Namespace) => {
   const userRepository = new UserRepository();
   const userController = new UserController();
@@ -21,18 +27,39 @@ const startWebsocket = (io: Namespace) => {
     await userController.setUserOnline(userId);
 
     io.to(userId).emit('message', {
-      text: 'Connected',
-      userId,
+      type: 'CONNECTION_UPDATE',
+      data: { userId, text: 'Connected' },
     });
 
-    socket.on('message', async (message: any) => {
-      console.log('Message', message);
-      console.log('User Id', userId);
+    socket.on(
+      'message',
+      async (
+        message: {
+          text: string;
+          to: string;
+        },
+        callback: Function,
+      ) => {
+        let response: ResponseProps = {
+          isSuccess: false,
+        };
 
-      const response = await chatController.createMessage(message.text, userId, message.to);
+        try {
+          console.log('Message', { ...message, userId });
 
-      io.to(message.to).emit('message', { response });
-    });
+          const data = await chatController.createMessage(message.text, userId, message.to);
+
+          io.to(message.to).emit('message', { type: 'MESSAGE', data });
+
+          response.isSuccess = true;
+          response.data = data;
+        } catch (error) {
+          response.error = error;
+        } finally {
+          callback(response);
+        }
+      },
+    );
 
     socket.on('disconnect', async () => {
       await userController.setUserOffline(userId);
