@@ -37,3 +37,11 @@ export const UserDoesNotExistError = () => {
 
   return error;
 };
+
+export const ArgumentsDoesNotExistError = () => {
+  error.statusCode = 406;
+  error.message = 'Invalid Arguments';
+  error.name = 'INVALID_ARGUMENTS';
+
+  return error;
+};

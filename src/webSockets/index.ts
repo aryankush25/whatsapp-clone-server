@@ -2,9 +2,15 @@ import { Namespace, Socket } from 'socket.io';
 import { UserController } from '../controller/UserController';
 import { ChatController } from '../controller/ChatController';
 import UserRepository from '../repository/UserRepository';
-import { createErrorResponse, createSuccessResponse, createWebSocketUpdatePayload, isPresent } from '../utils/helpers';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  createWebSocketUpdatePayload,
+  isNilOrEmpty,
+  isPresent,
+} from '../utils/helpers';
 import { messageTypes } from '../utils/constants';
-import { UnauthorizedError } from '../errors';
+import { UnauthorizedError, ArgumentsDoesNotExistError } from '../errors';
 
 const startWebsocket = (io: Namespace) => {
   const userRepository = new UserRepository();
@@ -48,9 +54,14 @@ const startWebsocket = (io: Namespace) => {
         callback: Function,
       ) => {
         try {
+          if (isNilOrEmpty(message) || isNilOrEmpty(message.text) || isNilOrEmpty(message.to)) {
+            throw ArgumentsDoesNotExistError();
+          }
+
           const data = await chatController.createMessage(message.text, userId, message.to);
 
           io.to(message.to).emit('message', createWebSocketUpdatePayload(messageTypes.message, data));
+
           callback(createSuccessResponse(data));
         } catch (error) {
           callback(createErrorResponse(error));
