@@ -7,8 +7,9 @@ export const removeNullOrEmptyKeys = (object: any) =>
   R.filter((value: any) => !(isNilOrEmpty(value) || value === -1), object);
 
 // FOR WEB SOCKETS
-export const createWebSocketUpdatePayload = (type: string, payload: Object) => ({ type, data: payload });
+export const createWebSocketUpdatePayload = (type: string, payload: Object) =>
+  createSuccessResponse({ type, data: payload });
 
 // FOR API RESPONSE
-export const createSuccessResponse = (payload: Object) => ({ isSuccess: true, data: payload });
-export const createErrorResponse = (payload: Object) => ({ isSuccess: false, data: payload });
+export const createSuccessResponse = (data: Object) => ({ isSuccess: true, data });
+export const createErrorResponse = (error: Object) => ({ isSuccess: false, error });
