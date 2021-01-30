@@ -20,7 +20,7 @@ export class ChatController {
   }
 
   async getChatsBetween(request: Request, response: Response, next: NextFunction) {
-    const { chatWithUserId, take, skip } = request.body;
+    const { chatWithUserId, take, skip } = request.query;
 
     const sender = response.locals.user;
     const receiver = await this.userRepository.getUser(chatWithUserId);
