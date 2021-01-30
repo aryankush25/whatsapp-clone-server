@@ -6,12 +6,6 @@ import { User } from '../database/entity/User';
 
 const SECRET = 'secret';
 
-interface CreateUserPayload {
-  name: string;
-  email: string;
-  password: string;
-}
-
 interface UpdateUserPayload {
   searchProps: Object;
   updatedValues: any;
@@ -20,9 +14,7 @@ interface UpdateUserPayload {
 class UserRepository {
   private userRepository = getRepository(User);
 
-  async createUser(props: CreateUserPayload) {
-    const { name, email, password } = props;
-
+  async createUser(name: string, email: string, password: string) {
     const user = await this.userRepository.save({
       name,
       email,

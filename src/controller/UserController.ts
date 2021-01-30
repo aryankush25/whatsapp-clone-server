@@ -2,15 +2,22 @@ import { NextFunction, Request, Response } from 'express';
 import { In } from 'typeorm';
 import * as R from 'ramda';
 import { Chat } from '../database/entity/Chat';
-import { UserDoesNotExistError } from '../errors';
+import { ArgumentsDoesNotExistError, UserDoesNotExistError } from '../errors';
 import UserRepository from '../repository/UserRepository';
+import { isNilOrEmpty } from '../utils/helpers';
 
 export class UserController {
   private userRepository = new UserRepository();
 
   async register(request: Request, response: Response, next: NextFunction) {
     try {
-      const user = await this.userRepository.createUser(request.body);
+      const { name, email, password } = request.body;
+
+      if (isNilOrEmpty(email) || isNilOrEmpty(name) || isNilOrEmpty(password)) {
+        throw ArgumentsDoesNotExistError();
+      }
+
+      const user = await this.userRepository.createUser(name, email, password);
 
       return {
         ...user,
@@ -24,6 +31,10 @@ export class UserController {
   async login(request: Request, response: Response, next: NextFunction) {
     try {
       const { email, password } = request.body;
+
+      if (isNilOrEmpty(email) || isNilOrEmpty(password)) {
+        throw ArgumentsDoesNotExistError();
+      }
 
       const isValidUser = await this.userRepository.validatePassword(email, password);
 
