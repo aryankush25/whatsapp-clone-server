@@ -10,7 +10,7 @@
     "build": "npm run clean && npm run build:only",
     "migrate": "npm run build && ./node_modules/typeorm/cli.js migration:run",
     "migrate:generate": "npm run build && ./node_modules/typeorm/cli.js migration:generate -n",
-    "start:build": "node build/index.js",
+    "start:build": "node -r dotenv/config build/index.js",
     "start": "npm run migrate && npm run start:build",
     "start:dev": "npm run build:only && npm run start:build",
     "dev": "npm run migrate && nodemon"
@@ -38,6 +38,7 @@
     "@types/ramda": "^0.27.36",
     "@types/socket.io": "^2.1.12",
     "@types/uuid": "^8.3.0",
+    "dotenv": "^8.2.0",
     "nodemon": "^2.0.7",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",

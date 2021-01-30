@@ -4,6 +4,7 @@ import http from 'http';
 import cors from 'cors';
 import chalk from 'chalk';
 import 'reflect-metadata';
+import envConfigs from './utils/envConfig';
 import { Routes, RoutesPayload } from './routes';
 import authMiddleware from './middlewares/auth';
 import { routeNotFound, handleErrors } from './middlewares/errors';
@@ -45,7 +46,7 @@ createConnection()
       );
     });
 
-    const port = process.env.PORT || 7000;
+    const port = envConfigs.port || 7000;
 
     app.use(routeNotFound);
 
