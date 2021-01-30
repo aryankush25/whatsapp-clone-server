@@ -2,12 +2,8 @@ import { Namespace, Socket } from 'socket.io';
 import { UserController } from '../controller/UserController';
 import { ChatController } from '../controller/ChatController';
 import UserRepository from '../repository/UserRepository';
-
-interface ResponseProps {
-  isSuccess: boolean;
-  data?: Object;
-  error?: Object;
-}
+import { createErrorResponse, createSuccessResponse, createWebSocketUpdatePayload } from '../utils/helpers';
+import { messageTypes } from '../utils/constants';
 
 const startWebsocket = (io: Namespace) => {
   const userRepository = new UserRepository();
@@ -26,10 +22,10 @@ const startWebsocket = (io: Namespace) => {
 
     await userController.setUserOnline(userId);
 
-    io.to(userId).emit('message', {
-      type: 'CONNECTION_UPDATE',
-      data: { userId, text: 'Connected' },
-    });
+    io.to(userId).emit(
+      'message',
+      createWebSocketUpdatePayload(messageTypes.connectionUpdate, { userId, text: 'Connected' }),
+    );
 
     socket.on(
       'message',
@@ -40,23 +36,13 @@ const startWebsocket = (io: Namespace) => {
         },
         callback: Function,
       ) => {
-        let response: ResponseProps = {
-          isSuccess: false,
-        };
-
         try {
-          console.log('Message', { ...message, userId });
-
           const data = await chatController.createMessage(message.text, userId, message.to);
 
-          io.to(message.to).emit('message', { type: 'MESSAGE', data });
-
-          response.isSuccess = true;
-          response.data = data;
+          io.to(message.to).emit('message', createWebSocketUpdatePayload(messageTypes.message, data));
+          callback(createSuccessResponse(data));
         } catch (error) {
-          response.error = error;
-        } finally {
-          callback(response);
+          callback(createErrorResponse(error));
         }
       },
     );
