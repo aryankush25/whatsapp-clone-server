@@ -33,6 +33,8 @@ const mainSocketConnectionHandler = (io: Namespace) => {
         await userController.setUserOnline(userId);
 
         socket.send(createWebSocketUpdatePayload(messageTypes.connectionUpdate, { userId, status: 'Connected' }));
+
+        // io.of('/userOnline').to(userId).emit('message', { isOnline: true });
       } else {
         throw UnauthorizedError();
       }
@@ -71,6 +73,8 @@ const mainSocketConnectionHandler = (io: Namespace) => {
 
     socket.on('disconnect', async () => {
       await userController.setUserOffline(userId);
+
+      io.to('/userOnline').emit(userId, { isOnline: false });
 
       console.log('Closed websocket connection', userId);
     });
