@@ -12,7 +12,7 @@ import { UserController } from '../controller/UserController';
 import { ChatController } from '../controller/ChatController';
 import UserRepository from '../repository/UserRepository';
 
-const mainSocketConnectionHandler = (io: Namespace) => {
+const mainSocketConnectionHandler = (io: Namespace, userOnlineIo: Namespace) => {
   const userRepository = new UserRepository();
   const userController = new UserController();
   const chatController = new ChatController();
@@ -34,7 +34,7 @@ const mainSocketConnectionHandler = (io: Namespace) => {
 
         socket.send(createWebSocketUpdatePayload(messageTypes.connectionUpdate, { userId, status: 'Connected' }));
 
-        // io.of('/userOnline').to(userId).emit('message', { isOnline: true });
+        userOnlineIo.to(userId).emit('message', { isOnline: true });
       } else {
         throw UnauthorizedError();
       }
@@ -74,7 +74,7 @@ const mainSocketConnectionHandler = (io: Namespace) => {
     socket.on('disconnect', async () => {
       await userController.setUserOffline(userId);
 
-      io.to('/userOnline').emit(userId, { isOnline: false });
+      userOnlineIo.to(userId).emit('message', { isOnline: false });
 
       console.log('Closed websocket connection', userId);
     });

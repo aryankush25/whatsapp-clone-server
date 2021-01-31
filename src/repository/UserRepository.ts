@@ -103,7 +103,6 @@ class UserRepository {
     if (!user) return user;
 
     delete user.hashedPassword;
-    delete user.isOnline;
 
     return user;
   }

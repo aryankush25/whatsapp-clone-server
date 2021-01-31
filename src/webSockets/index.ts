@@ -4,13 +4,13 @@ import mainSocketConnectionHandler from './mainSocketConnection';
 import userOnlineConnectionHandler from './userOnlineConnection';
 
 const startWebsocket = (server: ReturnType<typeof http.createServer>) => {
-  const mainSocketConnection: Namespace = require('socket.io')(server);
-  const userOnlineConnection: Namespace = require('socket.io')(server, {
+  const mainSocketNamespace: Namespace = require('socket.io')(server);
+  const userOnlineNamespace: Namespace = require('socket.io')(server, {
     path: '/userOnline',
   });
 
-  mainSocketConnectionHandler(mainSocketConnection);
-  userOnlineConnectionHandler(userOnlineConnection);
+  mainSocketConnectionHandler(mainSocketNamespace, userOnlineNamespace);
+  userOnlineConnectionHandler(userOnlineNamespace);
 };
 
 export default startWebsocket;

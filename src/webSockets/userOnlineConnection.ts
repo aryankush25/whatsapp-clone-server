@@ -6,7 +6,7 @@ import UserRepository from '../repository/UserRepository';
 const userOnlineConnectionHandler = (io: Namespace) => {
   const userRepository = new UserRepository();
 
-  io.on('connection', (socket: Socket) => {
+  io.on('connection', async (socket: Socket) => {
     const { token }: any = socket.handshake.auth;
     const { userToSubscribe }: any = socket.handshake.query;
     let userId = null;
@@ -19,6 +19,12 @@ const userOnlineConnectionHandler = (io: Namespace) => {
         console.log(`New User Online websocket connection for ${userToSubscribe} from ${userId}`);
 
         socket.join(userToSubscribe);
+
+        const userToSubscribeData = await userRepository.getUser(userToSubscribe);
+
+        const isUserAlreadyOnline = userToSubscribeData.isOnline;
+
+        socket.send({ isOnline: isUserAlreadyOnline });
       } else {
         throw UnauthorizedError();
       }
