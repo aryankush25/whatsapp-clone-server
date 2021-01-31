@@ -14,7 +14,7 @@
     "start": "npm run migrate && npm run start:build",
     "start:dev": "npm run build:only && npm run start:build",
     "dev": "npm run migrate && nodemon",
-    "heroku-postbuild": "npm install --production"
+    "heroku-postbuild": "npm start"
   },
   "author": "Aryan Agarwal",
   "license": "ISC",
