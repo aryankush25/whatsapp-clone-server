@@ -38,6 +38,14 @@ export const UserDoesNotExistError = () => {
   return error;
 };
 
+export const UserAlreadyOnlineError = () => {
+  error.statusCode = 403;
+  error.message = 'The user is already connected from another socket.';
+  error.name = 'USER_ALREADY_ONLINE';
+
+  return error;
+};
+
 export const ArgumentsDoesNotExistError = () => {
   error.statusCode = 406;
   error.message = 'Invalid Arguments';

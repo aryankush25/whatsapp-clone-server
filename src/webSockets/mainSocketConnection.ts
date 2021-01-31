@@ -7,7 +7,7 @@ import {
   isPresent,
 } from '../utils/helpers';
 import { messageTypes } from '../utils/constants';
-import { UnauthorizedError, ArgumentsDoesNotExistError } from '../errors';
+import { UnauthorizedError, ArgumentsDoesNotExistError, UserAlreadyOnlineError } from '../errors';
 import { UserController } from '../controller/UserController';
 import { ChatController } from '../controller/ChatController';
 import UserRepository from '../repository/UserRepository';
@@ -26,6 +26,12 @@ const mainSocketConnectionHandler = (io: Namespace, userOnlineIo: Namespace) => 
       userId = dataFromToken['id'];
 
       if (isPresent(userId)) {
+        const currentUser = await userRepository.getUser(userId);
+
+        if (currentUser.isOnline) {
+          throw UserAlreadyOnlineError();
+        }
+
         console.log('New websocket connection', userId);
 
         socket.join(userId);
