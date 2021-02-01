@@ -1,10 +1,6 @@
 const ormConfigs = {
+  url: process.env.DATABASE_URL,
   type: process.env.ORM_CONFIG_TYPE,
-  host: process.env.ORM_CONFIG_HOST,
-  port: Number(process.env.ORM_CONFIG_PORT),
-  username: process.env.ORM_CONFIG_USERNAME,
-  password: process.env.ORM_CONFIG_PASSWORD,
-  database: process.env.ORM_CONFIG_DATABASE,
   synchronize: JSON.parse(process.env.ORM_CONFIG_SYNCHRONIZE),
   logging: JSON.parse(process.env.ORM_CONFIG_LOGGING),
 };
