@@ -13,8 +13,7 @@
     "start:build": "node -r dotenv/config build/index.js",
     "start": "npm run migrate && npm run start:build",
     "start:dev": "npm run build:only && npm run start:build",
-    "dev": "npm run migrate && nodemon",
-    "heroku-postbuild": "npm start"
+    "dev": "npm run migrate && nodemon"
   },
   "author": "Aryan Agarwal",
   "license": "ISC",
