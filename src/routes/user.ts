@@ -34,6 +34,12 @@ const userRoutes: RoutesPayload[] = [
     controller: UserController,
     action: 'getInitiatedChatUsers',
   },
+  {
+    method: 'get',
+    route: '/getAllUsers',
+    controller: UserController,
+    action: 'getAllUsers',
+  },
 ];
 
 export default userRoutes;

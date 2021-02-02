@@ -69,6 +69,14 @@ export class UserController {
     }
   }
 
+  async getAllUsers(request: Request, response: Response, next: NextFunction) {
+    try {
+      return this.userRepository.getUsers();
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   async getInitiatedChatUsers(request: Request, response: Response, next: NextFunction) {
     try {
       const currentUserWithChats = await this.userRepository.getUser(response.locals.user.id, {
